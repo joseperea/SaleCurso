@@ -6,7 +6,7 @@ using Sale.Shared.Entities;
 namespace Sale.API.Controllers
 {
     [ApiController]
-    [Route("/api/coutries")]
+    [Route("/api/countries")]
     public class CountriesController : ControllerBase
     {
         private readonly DataContext _context;
@@ -14,6 +14,24 @@ namespace Sale.API.Controllers
         public CountriesController(DataContext context)
         {
             this._context = context;
+        }
+
+        [HttpGet]
+        public async Task<ActionResult> GetAsync()
+        {
+            return Ok(await _context.Countries.ToListAsync());
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult> GetAsync(int id)
+        {
+            var country = await _context.Countries.FirstOrDefaultAsync(t => t.Id == id);
+            if (country is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(country);
         }
 
         [HttpPost]
@@ -24,10 +42,26 @@ namespace Sale.API.Controllers
             return Ok(country);
         }
 
-        [HttpGet]
-        public async Task<ActionResult> GetAsync() 
+        [HttpPut]
+        public async Task<ActionResult> PutAsync(Country country)
         {
-            return Ok(await _context.Countries.ToListAsync());
+            _context.Update(country);
+            await _context.SaveChangesAsync();
+            return Ok(country);
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteAsync(int id)
+        {
+            var country = await _context.Countries.FirstOrDefaultAsync(t => t.Id == id);
+            if (country is null)
+            {
+                return NotFound();
+            }
+
+            _context.Remove(country);
+            await _context.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
