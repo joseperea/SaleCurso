@@ -2,11 +2,12 @@
 @inject IRepository repository
 
 <h3>Paises</h3>
+<a class="btn btn-primary mb-2" href="/countries/Create"> Nuevo País</a>
 
 <GenericList MyList="Countries">
-    <Loading>
+@*    <Loading>
         <p>Cargando...</p>
-    </Loading>
+    </Loading>*@
     <NoRecords>
         <p>No hay paises para mostrar.</p>
     </NoRecords>
