@@ -34,13 +34,13 @@
 
     protected override void OnInitialized()
     {
-        editContext = new(country);
+        editContext = new EditContext(country);
     }
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext context)
     {
         var formWasMofied = editContext.IsModified();
-        if (formWasMofied || FormPostSuccessfully)
+        if (!formWasMofied || FormPostSuccessfully)
         {
             return;
         }
@@ -51,8 +51,8 @@
                 Text = "¿Deseas abandonar la pagina y perder los cambios?",
                 Icon = SweetAlertIcon.Question,
                 ShowCancelButton = true,
-                CancelButtonText = "Si",
-                ConfirmButtonText = "No",
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si",
             });
         var confirm = !string.IsNullOrEmpty(result.Value);
         if (confirm)
