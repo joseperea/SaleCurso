@@ -5,7 +5,7 @@
 
 <h3>Crear Estado / Departamentos</h3>
 
-<StateForm @ref="stateForm" state="state" OnvalidSubmit="Create" ReturAction="Return" />
+<StateForm @ref="stateForm" state="state" OnvalidSubmit="CreateAsync" ReturAction="Return" />
 
 @code {
     private State state = new();
@@ -15,7 +15,7 @@
     [Parameter]
     public int CountryId { get; set; }
 
-    private async Task Create()
+    private async Task CreateAsync()
     {
         state.CountryId = CountryId;
         var httpResponse = await repository.Post("/api/states", state);

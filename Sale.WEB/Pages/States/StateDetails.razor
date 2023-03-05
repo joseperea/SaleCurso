@@ -1,0 +1,115 @@
+﻿@page "/states/details/{StateId:int}"
+@inject IRepository repository
+@inject NavigationManager navigationManager
+@inject SweetAlertService sweetAlertService
+
+<h3>Detalle estados/Departamento</h3>
+
+@if (State is null)
+{
+    <p>Cargando...</p>
+}
+else
+{
+    <h3>@State.Name</h3>
+    <div class="mb-2">
+        <a class="btn btn-outline-primary" href="/cities/create/@State.Id"> Nuevo Cuidad</a>
+        <a class="btn btn-outline-dark" href="/countries/details/@State.CountryId"> Regresar</a>
+    </div>
+    <GenericList MyList="State.Cities!.ToList()">
+        @*    <Loading>
+    <p>Cargando...</p>
+    </Loading>*@
+        <NoRecords>
+            <p>No hay cuidades para mostrar.</p>
+        </NoRecords>
+        <Body>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Ciudad</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var city in State.Cities!.ToList())
+                    {
+                        <tr>
+                            <td>
+                                @city.Name
+                            </td>
+                            <td>
+                                <a class="btn btn-outline-warning" href="/cities/edit/@city.Id">Editar</a>
+                                <button class="btn btn-outline-danger" @onclick=@(() => DeleteAsync(city.Id))>Borrar</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </Body>
+    </GenericList>
+}
+
+@code {
+    private State? State;
+
+    [Parameter]
+    public int StateId { get; set; }
+
+    private async Task LoadAsync()
+    {
+        var responseHttp = await repository.Get<State>($"/api/states/{StateId}");
+
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                navigationManager.NavigateTo("/countries");
+                return;
+            }
+
+            var message = await responseHttp.GetErrorMessageAsync();
+            await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+            return;
+        }
+
+        State = responseHttp.Response;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task DeleteAsync(int CityId)
+    {
+        var result = await sweetAlertService.FireAsync(new SweetAlertOptions
+            {
+                Title = "Confirmacion",
+                Text = "¿Realmente Desea eliminar el registro?",
+                Icon = SweetAlertIcon.Question,
+                ShowCancelButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Si",
+            });
+
+        var confirm = string.IsNullOrEmpty(result.Value);
+        if (confirm)
+        {
+            return;
+        }
+
+        var responseHttp = await repository.Delete($"/api/cities/{CityId}");
+
+        if (responseHttp.Error)
+        {
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            {
+                var message = await responseHttp.GetErrorMessageAsync();
+                await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
+                return;
+            }
+        }
+
+        await LoadAsync();
+    }
+}
