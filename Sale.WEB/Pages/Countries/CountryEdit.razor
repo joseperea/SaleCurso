@@ -3,11 +3,11 @@
 @inject NavigationManager navigationManager
 @inject SweetAlertService sweetAlertService
 
-<h3>Editar País</h3>
+<h3>Editar</h3>
 
 @if (country is null)
 {
-    <p>Cargando...</p>
+    <p>Cargando..</p>
 }else
 {
     <CountryForm @ref="countryForm" country="country" OnvalidSubmit="EditAsync" ReturAction="Return"></CountryForm>
@@ -15,6 +15,7 @@
 
 @code {
     private Country? country;
+
     private CountryForm? countryForm;
 
     [Parameter]
@@ -22,35 +23,36 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var httpResponse = await repository.Get<Country>($"/api/countries/{Id}");
-        if (httpResponse.Error)
+        var responseHttp = await repository.Get<Country>($"/api/countries/{Id}");
+
+        if (responseHttp.Error)
         {
-            if (httpResponse.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
+            if (responseHttp.HttpResponseMessage.StatusCode == HttpStatusCode.NotFound)
             {
                 navigationManager.NavigateTo("/countries");
                 return;
             }
 
-            var message = await httpResponse.GetErrorMessageAsync();
+            var message = await responseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
 
-        country = httpResponse.Response;
+        country = responseHttp.Response;
     }
 
     private async Task EditAsync()
     {
-        var httpResponse = await repository.Put("/api/countries", country);
-        if (httpResponse.Error)
+        var respnseHttp = await repository.Put("/api/countries", country);
+
+        if (respnseHttp.Error)
         {
-            var message = await httpResponse.GetErrorMessageAsync();
+            var message = await respnseHttp.GetErrorMessageAsync();
             await sweetAlertService.FireAsync("Error", message, SweetAlertIcon.Error);
             return;
         }
 
-        countryForm!.FormPostSuccessfully = true;
-        navigationManager.NavigateTo("/countries");
+        Return();
     }
 
     private void Return()
