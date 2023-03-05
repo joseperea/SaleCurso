@@ -5,10 +5,10 @@
 <EditForm EditContext="editContext" OnValidSubmit="OnvalidSubmit">
     <DataAnnotationsValidator />
     <div class="mb-3">
-        <label> País</label>
+        <label> Estado / Departamento</label>
         <div>
-            <InputText class="form-control" @bind-Value="@country.Name"></InputText>
-            <ValidationMessage For="@(() => country.Name)" />
+            <InputText class="form-control" @bind-Value="@state.Name"></InputText>
+            <ValidationMessage For="@(() => state.Name)" />
         </div>
     </div>
     <button type="submit" class="btn btn-outline-success">Guardar</button>
@@ -20,7 +20,7 @@
 
     [Parameter]
     [EditorRequired]
-    public Country country { get; set; } = null!;
+    public State state { get; set; } = null!;
 
     [Parameter]
     [EditorRequired]
@@ -34,7 +34,7 @@
 
     protected override void OnInitialized()
     {
-        editContext = new(country);
+        editContext = new(state);
     }
 
     private async Task OnBeforeInternalNavigation(LocationChangingContext context)
