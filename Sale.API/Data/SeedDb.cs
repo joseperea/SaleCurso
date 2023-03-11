@@ -8,9 +8,9 @@ namespace Sale.API.Data
     public class SeedDb
     {
         private readonly DataContext _context;
-        private readonly ApiService _apiService;
+        private readonly IApiService _apiService;
 
-        public SeedDb(DataContext context, ApiService apiService)
+        public SeedDb(DataContext context, IApiService apiService)
         {
             _context = context;
             _apiService = apiService;
@@ -25,8 +25,8 @@ namespace Sale.API.Data
 
         private async Task CheckCountriesAsync()
         {
-            //if (!_context.Countries.Any())
-            //{
+            if (!_context.Countries.Any())
+            {
                 Response responseCountries = await _apiService.GetListAsync<CountryResponse>("/v1", "/countries");
                 if (responseCountries.IsSuccess)
                 {
@@ -79,7 +79,7 @@ namespace Sale.API.Data
                         }
                     }
                 }
-            //}
+            }
         }
     }
 }
