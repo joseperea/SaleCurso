@@ -87,6 +87,7 @@ namespace Sale.API.Data
                 });
                 _context.Countries.Add(new Country { Name = "Mexico" });
                 _context.Countries.Add(new Country { Name = "Perú" });
+
                 await _context.SaveChangesAsync();
             }
         }
