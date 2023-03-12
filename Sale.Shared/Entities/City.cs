@@ -14,5 +14,6 @@ namespace Sale.Shared.Entities
         public string Name { get; set; } = null!;
 
         public State? State { get; set; }
+        public ICollection<User>? Users { get; set; }
     }
 }
