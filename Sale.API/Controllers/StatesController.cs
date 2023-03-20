@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Sale.API.Data;
 using Sale.API.Helpers;
@@ -9,12 +11,22 @@ namespace Sale.API.Controllers
 {
     [ApiController]
     [Route("/api/states")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class StatesController: ControllerBase
     {
         private readonly DataContext _context;
         public StatesController(DataContext context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        [HttpGet("combo/{countryId:int}")]
+        public async Task<ActionResult> GetCombo(int countryId)
+        {
+            return Ok(await _context.States
+                .Where(x => x.CountryId == countryId)
+                .ToListAsync());
         }
 
         [HttpGet]

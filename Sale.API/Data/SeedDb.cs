@@ -70,7 +70,7 @@ namespace Sale.API.Data
                 if (responseCountries.IsSuccess)
                 {
                     List<CountryResponse> countries = (List<CountryResponse>)responseCountries.Result!;
-                    foreach (CountryResponse countryResponse in countries)
+                    foreach (CountryResponse countryResponse in countries.Where(t => t.Name.ToLower().Contains("colombia")))
                     {
                         Country country = await _context.Countries!.FirstOrDefaultAsync(c => c.Name == countryResponse.Name!)!;
                         if (country == null)
